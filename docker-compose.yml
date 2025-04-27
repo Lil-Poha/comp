@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  nginx-waf:
+    image: owasp/modsecurity-crs:nginx-alpine  
+    ports:
+      - "8000:8000"
+      - "4430:4430"
+    # volumes:
+      # - ./nginx/templates:/etc/nginx/templates  # Кастомные конфиги Nginx :cite[4]:cite[8]
+      # - ./modsec-exclusions:/etc/modsecurity.d  # Правила исключений ModSecurity
+    environment:
+      BACKEND: "http://juice_shop:3000"  
+      SERVER_NAME: "localhost"
+      PORT: "8000"
+      SSL_PORT: "4430"
+    depends_on:
+      - juice_shop
+    networks:
+      - app_network
+
+  juice_shop:
+    image: bkimminich/juice-shop 
+    ports:
+      - 3000:3000
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
