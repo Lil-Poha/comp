@@ -4,27 +4,24 @@ services:
   nginx-waf:
     image: owasp/modsecurity-crs:nginx-alpine  
     ports:
-      - "8000:8000"
-      - "8001:8001"
-      - "4430:4430"
+      - "8001:8000"
+    # volumes:
+      # - ./nginx/templates:/etc/nginx/templates  # Кастомные конфиги Nginx :cite[4]:cite[8]
+      # - ./modsec-exclusions:/etc/modsecurity.d  # Правила исключений ModSecurity
     environment:
-      BACKEND_1: "http://juice_shop_1:3000"  
-      BACKEND_2: "http://juice_shop_2:3000"  
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf  # Кастомная конфигурация NGINX
+      BACKEND: "http://juice_shop:3000"  
+      SERVER_NAME: "localhost"
+      PORT: "8000"
+      SSL_PORT: "4430"
     depends_on:
-      - juice_shop_1
-      - juice_shop_2
+      - juice_shop
     networks:
       - app_network
 
-  juice_shop_1:
+  juice_shop:
     image: bkimminich/juice-shop 
-    networks:
-      - app_network
-
-  juice_shop_2:
-    image: bkimminich/juice-shop 
+    ports:
+      - 3001:3000
     networks:
       - app_network
 
